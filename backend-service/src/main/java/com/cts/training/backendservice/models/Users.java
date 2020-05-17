@@ -1,6 +1,9 @@
 package com.cts.training.backendservice.models;
 
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -8,19 +11,20 @@ import javax.persistence.Table;
 @Table(name = "users")
 public class Users {
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	int userid;
 	String seatno;
 	String username;
 	String password;
-	String bookid;
+	String usertype;
 	public Users() {}
-	public Users(int userid, String seatno, String username, String password, String bookid) {
+	public Users(int userid, String seatno, String username, String password, String usertype) {
 		super();
 		this.userid = userid;
 		this.seatno = seatno;
 		this.username = username;
 		this.password = password;
-		this.bookid = bookid;
+		this.usertype = usertype;
 	}
 	public int getUserid() {
 		return userid;
@@ -46,16 +50,16 @@ public class Users {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getBookid() {
-		return bookid;
+	public String getUsertype() {
+		return usertype;
 	}
-	public void setBookid(String bookid) {
-		this.bookid = bookid;
+	public void setUsertype(String usertype) {
+		this.usertype = usertype;
 	}
 	@Override
 	public String toString() {
 		return "Users [userid=" + userid + ", seatno=" + seatno + ", username=" + username + ", password=" + password
-				+ ", bookid=" + bookid + "]";
+				+ ", usertype=" + usertype + "]";
 	}
 	
 	

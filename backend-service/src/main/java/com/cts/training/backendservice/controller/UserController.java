@@ -1,11 +1,8 @@
 package com.cts.training.backendservice.controller;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,24 +14,48 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.cts.training.backendservice.models.UserBooks;
 import com.cts.training.backendservice.models.Users;
-import com.cts.training.backendservice.repo.UserRepo;
+import com.cts.training.backendservice.service.UserBookService;
 import com.cts.training.backendservice.service.UserService;
 
 @RestController
 public class UserController {
 	
-	@Autowired
-	UserRepo userrepo;
 	
 	@Autowired
 	UserService userservice;
 	
+	@Autowired
+	UserBookService userbookservice;
+		
 	
 	@GetMapping("/users")
 	public List<Users> findAll() {
 		return userservice.getAll();
+	}
+	
+	@PostMapping("/userbooks")
+	public UserBooks insertUserBooks(@RequestBody UserBooks userBook) {
+		userbookservice.insert(userBook);
+		return userBook;
+	}
+	
+	@GetMapping("/userbooks/{tableid}")
+	public UserBooks getUserBook(@PathVariable int tableid) 
+	{
+		return userbookservice.getOne(tableid);	
+	}
+	
+	@DeleteMapping("/userbooks/delete/{tableid}")
+	public void deleteUserBook(@PathVariable int tableid) {
+		userbookservice.remove(tableid);
+//		return responce;
+	}
+	
+	@GetMapping("/getall-userbooks")
+	public List<UserBooks> getUserBooks(){
+		return userbookservice.getAll();
 	}
 	
 	@GetMapping("/users/{id}")
@@ -52,6 +73,7 @@ public class UserController {
 	@DeleteMapping("/users/{id}")
 	public void delete(@PathVariable int id) {
 		userservice.remove(id);
+//		return responce;
 	}
 	
 	@PutMapping("/users")
@@ -59,17 +81,11 @@ public class UserController {
 		Users us = userservice.alter(usr);
 		return us;
 	}
-	@GetMapping("/users/login")
-	public ResponseEntity<?> login(HttpServletRequest request){
-		String credentials =null;
-		String authorization = request.getHeader("Authorization");
-		if (authorization != null && authorization.startsWith("Basic")) {
-			String base64Credentials = authorization.substring("Basic".length()).trim();
-		    byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
-		    credentials = new String(credDecoded, StandardCharsets.UTF_8);
-		}
+	
+	@GetMapping("/validuser/{username}/{password}")
+	public ResponseEntity<?> userLogin(@PathVariable String username,@PathVariable String password){
 		try {
-			Users user = userservice.getUserByUsernameAndPassword(credentials.split(":")[0],credentials.split(":")[1]);
+			Users user = userservice.getUserByUsernameAndPassword(username,password);
 			
 			return new ResponseEntity<Users>(user,HttpStatus.OK);
 		} catch (Exception e ) {
@@ -77,6 +93,7 @@ public class UserController {
 			return new ResponseEntity<String>("No user found",HttpStatus.NOT_FOUND);
 		}
 	}
+
 	
 
 }
